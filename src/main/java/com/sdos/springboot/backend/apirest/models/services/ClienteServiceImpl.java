@@ -10,25 +10,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sdos.springboot.backend.apirest.models.dao.IClienteDao;
 import com.sdos.springboot.backend.apirest.models.entity.Cliente;
+import com.sdos.springboot.backend.apirest.models.entity.Region;
 
 @Service
-public class ClienteServiceImpl implements IClienteService  {
+public class ClienteServiceImpl implements IClienteService {
 
 	@Autowired
 	private IClienteDao clienteDao;
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<Cliente> findAll() {
 		return (List<Cliente>) clienteDao.findAll();
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public Page<Cliente> findAll(Pageable pageable) {
 		return clienteDao.findAll(pageable);
 	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
 	public Cliente findById(Long id) {
@@ -47,6 +48,10 @@ public class ClienteServiceImpl implements IClienteService  {
 		clienteDao.deleteById(id);
 	}
 
-	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Region> findAllRegiones() {
+		return clienteDao.findAllRegiones();
+	}
 
 }

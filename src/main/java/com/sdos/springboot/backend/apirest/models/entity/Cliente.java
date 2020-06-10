@@ -49,12 +49,12 @@ public class Cliente implements Serializable {
 	
 	private String foto;
 	
-	
-	@ManyToOne(fetch = FetchType.LAZY )
+	@NotNull(message="la región no puede ser vacia")
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="region_id")
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private Region region;
-
+	
 	
 	public Long getId() {
 		return id;
@@ -103,7 +103,7 @@ public class Cliente implements Serializable {
 	public void setFoto(String foto) {
 		this.foto = foto;
 	}
-	
+
 	public Region getRegion() {
 		return region;
 	}

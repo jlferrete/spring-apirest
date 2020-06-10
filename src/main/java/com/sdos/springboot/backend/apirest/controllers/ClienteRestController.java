@@ -2,7 +2,6 @@ package com.sdos.springboot.backend.apirest.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sdos.springboot.backend.apirest.models.entity.Cliente;
+import com.sdos.springboot.backend.apirest.models.entity.Region;
 import com.sdos.springboot.backend.apirest.models.services.IClienteService;
 import com.sdos.springboot.backend.apirest.models.services.IUploadFileService;
 
@@ -47,6 +49,8 @@ public class ClienteRestController {
 	@Autowired
 	private IUploadFileService uploadService;
 	
+	// private final Logger log = LoggerFactory.getLogger(ClienteRestController.class);
+
 	@GetMapping("/clientes")
 	public List<Cliente> index() {
 		return clienteService.findAll();
@@ -87,7 +91,7 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		
 		if(result.hasErrors()) {
-			
+
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
@@ -120,7 +124,7 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 
 		if(result.hasErrors()) {
-			
+
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
@@ -142,6 +146,7 @@ public class ClienteRestController {
 			clienteActual.setNombre(cliente.getNombre());
 			clienteActual.setEmail(cliente.getEmail());
 			clienteActual.setCreateAt(cliente.getCreateAt());
+			clienteActual.setRegion(cliente.getRegion());
 
 			clienteUpdated = clienteService.save(clienteActual);
 
@@ -163,15 +168,12 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-			
 			Cliente cliente = clienteService.findById(id);
-			
 			String nombreFotoAnterior = cliente.getFoto();
 			
 			uploadService.eliminar(nombreFotoAnterior);
-									
+			
 		    clienteService.delete(id);
-		    
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al eliminar el cliente de la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -185,19 +187,17 @@ public class ClienteRestController {
 	
 	@PostMapping("/clientes/upload")
 	public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") Long id){
-		
 		Map<String, Object> response = new HashMap<>();
 		
 		Cliente cliente = clienteService.findById(id);
 		
-		if(!archivo.isEmpty() ) {
-						
+		if(!archivo.isEmpty()) {
+
 			String nombreArchivo = null;
 			try {
 				nombreArchivo = uploadService.copiar(archivo);
 			} catch (IOException e) {
-				
-				response.put("mensaje", "Error al subir la imagen del cliente " );
+				response.put("mensaje", "Error al subir la imagen del cliente");
 				response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
@@ -211,7 +211,7 @@ public class ClienteRestController {
 			clienteService.save(cliente);
 			
 			response.put("cliente", cliente);
-			response.put("mensaje", "Has subido correctamente la imagen: " + nombreArchivo );
+			response.put("mensaje", "Has subido correctamente la imagen: " + nombreArchivo);
 			
 		}
 		
@@ -220,7 +220,7 @@ public class ClienteRestController {
 	
 	@GetMapping("/uploads/img/{nombreFoto:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
-		
+
 		Resource recurso = null;
 		
 		try {
@@ -233,8 +233,10 @@ public class ClienteRestController {
 		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
 		
 		return new ResponseEntity<Resource>(recurso, cabecera, HttpStatus.OK);
-		
 	}
 	
-	
+	@GetMapping("/clientes/regiones")
+	public List<Region> listarRegiones(){
+		return clienteService.findAllRegiones();
+	}
 }

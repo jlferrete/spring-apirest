@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.sdos.springboot.backend.apirest.models.entity.Cliente;
 import com.sdos.springboot.backend.apirest.models.entity.Region;
 
-public interface IClienteDao extends JpaRepository<Cliente, Long> {
+public interface IClienteDao extends JpaRepository<Cliente, Long>{
 
 	@Query("from Region")
 	public List<Region> findAllRegiones();
