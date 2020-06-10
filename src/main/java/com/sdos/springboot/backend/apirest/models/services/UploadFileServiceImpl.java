@@ -1,9 +1,13 @@
 package com.sdos.springboot.backend.apirest.models.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +45,31 @@ public class UploadFileServiceImpl implements IUploadFileService{
 
 	@Override
 	public String copiar(MultipartFile archivo) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename().replace(" ", "");
+		Path rutaArchivo = getPath(nombreArchivo);
+		
+		log.info(rutaArchivo.toString());
+		
+		Files.copy(archivo.getInputStream(), rutaArchivo);
+		
+		
+		return nombreArchivo;
 	}
 
 	@Override
 	public boolean eliminar(String nombreFoto) {
-		// TODO Auto-generated method stub
+		
+		if(nombreFoto != null && nombreFoto.length() >0 ) {
+			Path rutaFotoAnterior = Paths.get("uploads").resolve(nombreFoto).toAbsolutePath();
+			File archivoFotoAnterior = rutaFotoAnterior.toFile();
+			
+			if(archivoFotoAnterior.exists() && archivoFotoAnterior.canRead() ) {
+				archivoFotoAnterior.delete();
+				return true;
+			}
+		}
+		
 		return false;
 	}
 
