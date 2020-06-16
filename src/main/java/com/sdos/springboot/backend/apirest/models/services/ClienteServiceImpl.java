@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sdos.springboot.backend.apirest.models.dao.IClienteDao;
 import com.sdos.springboot.backend.apirest.models.dao.IFacturaDao;
+import com.sdos.springboot.backend.apirest.models.dao.IProductoDao;
 import com.sdos.springboot.backend.apirest.models.entity.Cliente;
 import com.sdos.springboot.backend.apirest.models.entity.Factura;
+import com.sdos.springboot.backend.apirest.models.entity.Producto;
 import com.sdos.springboot.backend.apirest.models.entity.Region;
 
 @Service
@@ -22,6 +24,9 @@ public class ClienteServiceImpl implements IClienteService {
 	
 	@Autowired
 	private IFacturaDao facturaDao;
+	
+	@Autowired
+	private IProductoDao productoDao;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -75,6 +80,13 @@ public class ClienteServiceImpl implements IClienteService {
 	@Transactional
 	public void deleteFacturaById(Long id) {
 		facturaDao.deleteById(id);
+	}
+
+	@Override
+	@Transactional
+	public List<Producto> findProductoByNombre(String term) {
+		
+		return productoDao.findByNombre(term);
 	}
 
 }
