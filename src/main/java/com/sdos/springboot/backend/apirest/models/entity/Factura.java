@@ -99,6 +99,15 @@ public class Factura implements Serializable {
 	public void setItems(List<ItemFactura> items) {
 		this.items = items;
 	}
+	
+	public Double getTotal() {
+		Double total = 0.00;
+		for(ItemFactura item: items) {
+			total += item.getImporte();
+		}
+		
+		return total;
+	}
 
 	private static final long serialVersionUID = 1L;
 
